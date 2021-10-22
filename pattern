@@ -1,0 +1,88 @@
+Sub Go()
+
+    Dim answer
+    answer = test_run()
+
+End Sub
+
+Function test_run()
+
+    '項目名取得
+    Dim koumokuName()
+    koumokuName() = Range("D18:BA18")
+
+    '項目数取得
+    Dim jMax As Long
+    jMax = Worksheets("項目入力").Range("D8")
+
+    '項目長取得
+    Dim iMax()
+    iMax() = Range("D11:BA11")
+    
+    '項目取得
+    Dim Rij()
+    Rij() = Range("D19:BA65")
+
+    '理論値取得
+    Dim rironti As Long
+    rironti = Range("D7")
+
+    'シート追加
+    Worksheets.Add After:=Sheets(Worksheets.count)
+    Dim sheetName
+    sheetName = Worksheets(Worksheets.count).name
+
+    '項目名出力
+    Dim count0
+    For count0 = 1 To jMax
+        Worksheets(sheetName).Cells(2, count0 + 1) = koumokuName(1, count0)
+    Next count0
+
+    'カウンタ、総乗
+    Dim i, j, j1, count1, count2, count3, count4, product1, product2 As Long
+    product2 = 1
+    product1 = 1
+
+    '項目毎に回す
+    For j = jMax To 1 Step -1
+
+        '出力行カウント
+        count1 = 2
+
+        'jまでの項目長の総乗
+        product1 = product1 * iMax(1, j)
+
+        '末項目(j=項目数)の場合
+        If j = jMax Then
+
+            '理論値からjの項目長を除いて回す
+            For count2 = 1 To rironti / iMax(1, j)
+
+                'jの項目を出力
+                For count3 = 1 To iMax(1, j)
+                    count1 = count1 + 1
+                    Worksheets(sheetName).Cells(count1, j + 1) = Rij(count3, j)
+                Next count3
+            Next count2
+
+        '末項目でない場合
+        Else
+
+            '理論値からjより小さい項目長の総乗を除いて回す
+            For count2 = 1 To rironti / product1
+            
+                'jの項目長で回す
+                For count3 = 1 To iMax(1, j)
+                    
+                    'j以上の項目長の総乗で回す
+                    For count4 = 1 To product2
+                        count1 = count1 + 1
+                        Worksheets(sheetName).Cells(count1, j + 1) = Rij(count3, j)
+                    Next count4
+                Next count3
+            Next count2
+        End If
+        product2 = product2 * iMax(1, j)
+    Next j
+        
+End Function
